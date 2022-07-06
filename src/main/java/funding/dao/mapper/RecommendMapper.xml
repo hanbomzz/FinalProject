@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="funding.dao.face.ReviewRecommendDao">
+
+	<select id="selectCntRecommend" parameterType="funding.dto.ReviewRecommend" resultType="int">
+		SELECT count(*) FROM reviewRecommend
+		WHERE id = #{id}
+			AND review_no = #{reviewNo}
+	</select>
+	
+	<insert id="insertRecommend" parameterType="funding.dto.ReviewRecommend">
+		INSERT INTO reviewRecommend
+		VALUES ( #{id}, #{reviewNo} )
+	</insert>
+	
+	<delete id="deleteRecommend" parameterType="funding.dto.ReviewRecommend">
+		DELETE reviewRecommend
+		WHERE id = #{id}
+			AND review_no = #{reviewNo}
+	</delete>
+	
+	<select id="selectTotalCntRecommend" parameterType="funding.dto.ReviewRecommend" resultType="int">
+		SELECT COUNT(*) FROM reviewRecommend
+		WHERE review_no = #{reviewNo}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,8 +15,6 @@
 
 <script type="text/javascript">
 
-const myName = '${sessionId}'
-
 
 	//메세지 입력창에 keydown 이벤트 발생시 처리
 	$(document).ready(function () {
@@ -32,18 +30,46 @@ const myName = '${sessionId}'
 	        }
 	    });
 	})
-	// websocket & stomp initialize
+	
+	// websocket & stomp 
 	var sock = new SockJS("/ws/chat");
 	var ws = Stomp.over(sock);
 	var reconnect = 0;
+	
+	//채팅방 입장하기
+	function exitChatRoom() {
+	  //  ws.send("/app/chat/message", {}, JSON.stringify({type:'EXIT', roomId: '${room.chatroomId}', sender: '${loginId}'}));
+	    ws.disconnect(); //세션이 끊어졌을때
+	    history.back(); //이전 페이지로 돌아가기
+	}
+	connect(); //웹소켓 접속
+	
+	//웹소켓 접속
+	function connect() {
+	    ws.connect({}, function(frame) {
+	    	// subscribe(path, callback) 해당 채팅방으로 메세지가 전송될 때 뿌려줌
+	        ws.subscribe("/topic/chat/room/"+'${room.chatroomId}', function(message) {
+	            var recv = JSON.parse(message.body); //String 객체를 JSON으로 변환
+	            recvMessage(recv); 
+	        });
+	    }, function(error) { //error 재접속 처리
+	        if(reconnect++ <= 5) {
+	            setTimeout(function() {
+	                console.log("connection reconnect");
+	                sock = new SockJS("/ws/chat");
+	                ws = Stomp.over(sock);
+	                connect();
+	            },10*1000);
+	        }
+	    });
+	}
+
+	
 
 	// 보내는 메시지
 	function sendMessage(message) {
-	    //const message = $("#chat-message").val();
-	    // sender 세션 아이디값으로 임시로 정해놓음
+		// send(path, header, message)로 메시지를 보냄
 	      ws.send("/app/chat/message", {}, JSON.stringify({type:'TALK', chatroomId: '${room.chatroomId}', sender: '${sessionScope.nick}', message: message})); //자바스크립트 값을 JSON문자열로 변환
-//	     recvMessage(message);  
-	   
 
 	}
 
@@ -80,45 +106,12 @@ const myName = '${sessionId}'
 	}
 
 
-
-	//웹소켓 접속
-	function connect() {
-	    // pub/sub event
-	    ws.connect({}, function(frame) {
-	        ws.subscribe("/topic/chat/room/"+'${room.chatroomId}', function(message) {
-	            var recv = JSON.parse(message.body); //String 객체를 JSON으로 변환
-	            recvMessage(recv); 
-	        });
-	    }, function(error) { //error 재접속 처리
-	        if(reconnect++ <= 5) {
-	            setTimeout(function() {
-	                console.log("connection reconnect");
-	                sock = new SockJS("/ws/chat");
-	                ws = Stomp.over(sock);
-	                connect();
-	            },10*1000);
-	        }
-	    });
-	}
-
-	//채팅방 입장하기
-	function exitChatRoom() {
-	  //  ws.send("/app/chat/message", {}, JSON.stringify({type:'EXIT', roomId: '${room.chatroomId}', sender: '${loginId}'}));
-	    ws.disconnect(); //세션이 끊어졌을때
-	    history.back(); //이전 페이지로 돌아가기
-	}
-	connect(); 
-
-
 	//채팅 보내고 난 후 비워주기
 	function clearTextarea() {
 	    $('div.input-div textarea').val('');
 	}
 
-
-
 	</script>
-
 
 
 	<style type="text/css">

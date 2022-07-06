@@ -17,10 +17,13 @@
 	</bean>
 	
 	<!-- 마이바티스 로깅 -->
+	<!-- 	-> 마이바티스 dataSource의 프록시(Proxy) -->
 	<bean id="dataSource" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
 		
+		<!-- 프록시 대상 DB DataSource설정하기 (원본 DB 정보) -->
 		<constructor-arg ref="dataSourceSpied" />
 		
+		<!-- 로그 출력 양식(포맷) 설정 -->
 		<property name="logFormatter">
 			<bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
 				<property name="loggingType" value="MULTI_LINE" />
@@ -36,11 +39,11 @@
 <!-- 		dataSource 빈을 이용하여 DB연결 정보를 설정한다 -->
 		<property name="dataSource" ref="dataSource" />
 		
-<!-- 		마이바티스 설정 파일 -->
+<!--  Configuration XML 파일의 위치 설정하기  -->
 		<property name="configLocation" value="classpath:/mybatis-config.xml"/>
 		
 		
-
+	<!-- Mapper XML 파일의 위치 설정하기 -->
 		<property name="mapperLocations">
 			<array>
 				<value>classpath:/funding/dao/**/*Mapper.xml</value>

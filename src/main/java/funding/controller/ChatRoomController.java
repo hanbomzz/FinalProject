@@ -1,7 +1,5 @@
 package funding.controller;
 
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,50 +9,46 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import funding.dto.ChatRoom;
 import funding.dto.Project;
-import funding.repository.ChatRoomRepository;
+import funding.service.face.ChatService;
 
 @Controller
 @RequestMapping("/chat")
-public class RoomController {
+public class ChatRoomController {
 
-	private static Logger log = LoggerFactory.getLogger(RoomController.class);
+	private static Logger log = LoggerFactory.getLogger(ChatRoomController.class);
 
 	@Autowired
-	private ChatRoomRepository repository;
+	private ChatService chatService;
 
 	// 채팅방 생성
 	@PostMapping("/room")
-	@ResponseBody
 	public ChatRoom createRoom(int projectNo) {
-		log.info("[/chat/room][POST]");
-		log.info("요청파라미터: {}", projectNo);
-		return repository.createChatRoom(projectNo);
+
+		log.info("/chat/room 확인 : {}", projectNo);
+		return chatService.createChatRoom(projectNo);
 	}
 
 	// 채팅방 입장 화면
 	@GetMapping("/room/enter/{projectNo}")
-	public String roomDetail(Model model, Project project, @PathVariable int projectNo, HttpSession session) {
+	public String roomDetail(Model model, @PathVariable int projectNo) {
 
-		ChatRoom room = repository.findRoomById(projectNo);
-		project = repository.getProject(project);
-		System.out.println("결과값 테스트: " + room);
-		String sessionId = session.getId();
+		ChatRoom room = chatService.findRoomById(projectNo);
+		Project project = chatService.getProjectTitle(projectNo);
+		log.info("결과값 테스트: {}", room);
 		model.addAttribute("projectNo", projectNo);
 		model.addAttribute("room", room);
-		model.addAttribute("sessionId", sessionId);
 		model.addAttribute("project", project);
 		return "chat/chattingroom";
 	}
 
-	// 특정 채팅방 조회
+	// 채팅방 찾기
 	@GetMapping("/room/{projectNo}")
-	@ResponseBody
 	public ChatRoom roomInfo(@PathVariable int projectNo) {
-		log.info("[/chat/room/{}][GET]", projectNo);
-		return repository.findRoomById(projectNo);
+
+		log.info("/chat/room/{} 확인", projectNo);
+		return chatService.findRoomById(projectNo);
 	}
 }

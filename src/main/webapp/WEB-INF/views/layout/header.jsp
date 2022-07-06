@@ -582,6 +582,10 @@ $(function(){
        
         </li>
         <li class="nav-item_h">
+          <a class="nav-link active" aria-current="page" href="/review/list" style="color: #ffffff;">REVIEW</a>
+       
+        </li>
+        <li class="nav-item_h">
           <a class="nav-link active" aria-current="page" href="/main/guide" style="color: #ffffff;">GUIDE</a>
        
         </li>

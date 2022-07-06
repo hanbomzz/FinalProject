@@ -4,7 +4,6 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:aop="http://www.springframework.org/schema/aop"
-
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:websocket="http://www.springframework.org/schema/websocket"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
@@ -52,6 +51,15 @@
 			<beans:bean class="funding.interceptor.MainInterceptor"/>
 			
 		</interceptor>
+		<interceptor>
+		
+			<!-- 인터셉터 적용될 URL -->
+			<mapping path="/review/list"/>
+						
+			<!-- 인터셉터 클래스 지정 -->
+			<beans:bean class="funding.interceptor.ReviewInterceptor"/>
+			
+		</interceptor>
 	</interceptors>
 
 	<resources mapping="/projectImage/**" location="/projectImage/" />
@@ -64,6 +72,14 @@
 		<beans:property name="prefix" value="/WEB-INF/views/" />
 		<beans:property name="suffix" value=".jsp" />
 
+	</beans:bean>
+	
+	<!-- DownloadView 빈 설정 -->
+	<beans:bean id="down" class="funding.view.DownloadView" />
+	
+	<!-- jsonView 빈 설정 -->
+	<beans:bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+		<beans:property name="contentType" value="application/json; charset=utf-8"/>
 	</beans:bean>
 	
 	<!-- MultipartResover 설정 -->
@@ -102,18 +118,6 @@
 		</beans:property>
 	</beans:bean>
 	<!-- navermail 설정 end -->
-	
-	 <!-- websocket handler -->
-	<!--<beans:bean id="replyEchoHandler"
-		class="com.test.www.ReplyEchoHandler" />
-	<websocket:handlers>
-		<websocket:mapping path="/replyEcho"
-			handler="replyEchoHandler" />
-		<websocket:handshake-interceptors>
-			<beans:bean
-				class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor" />
-		</websocket:handshake-interceptors>
-	</websocket:handlers> -->
 
 	<!-- websocket handler -->
 	<beans:bean id="replyEchoHandler" class="funding.handler.ReplyEchoHandler"/>
